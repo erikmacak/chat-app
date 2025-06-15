@@ -4,6 +4,15 @@ import React from "react";
 import { auth } from "../../lib/firebase";
 
 export default function SignOut() {
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      console.log("User signed out successfully");
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
+  };  
+
   return (
     <button
       onClick={() => auth.signOut()}
