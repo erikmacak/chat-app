@@ -17,15 +17,14 @@ export default function SignIn() {
   }, [user, error]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
+    <div>
       <button
         onClick={() => signInWithGoogle()}
-        className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+        className="px-6 py-2 bg-white text-indigo-700 rounded hover:bg-indigo-100 transition cursor-pointer"
         disabled={loading}
       >
         Sign in with Google
       </button>
-      {error && <p className="text-red-500 mt-4">{error.message}</p>}
     </div>
   );
 }
