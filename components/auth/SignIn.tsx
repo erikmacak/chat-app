@@ -1,11 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { auth } from "../../lib/firebase";
 import { useSignInWithGoogle } from "react-firebase-hooks/auth";
 
 export default function SignIn() {
   const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
+
+  useEffect(() => {
+    if (user) {
+      console.log("User signed in:", user);
+    }
+    if (error) {
+      console.error("Sign in error:", error);
+    }
+  }, [user, error]);
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
