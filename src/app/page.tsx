@@ -1,3 +1,5 @@
+//Modified LandingPage component to check user existence and nickname, redirecting accordingly
+
 "use client";
 
 import SignIn from "../../components/auth/SignIn";
@@ -5,16 +7,36 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../lib/firebase";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createUserIfNotExists, hasUserNickname } from "../../services/user/userService";
 
 export default function LandingPage() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user) {
-      router.push("/");
+    const checkUserAndRedirect = async () => {
+      if (user) {
+        await createUserIfNotExists({
+          uid: user.uid,
+          email: user.email,
+          photoURL: user.photoURL
+        });
+
+        const nicknameExists = await hasUserNickname(user.uid);
+
+        if (!nicknameExists) {
+          router.push("/create-nickname");
+          return;
+        }
+
+        router.push("/home-page");
+      }
     }
-  }, [user, loading]);
+
+    if (!loading) {
+      checkUserAndRedirect();
+    }
+  },[user, loading, router]);
 
   if (loading) return <p>Loading...</p>;
 
