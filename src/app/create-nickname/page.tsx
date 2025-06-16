@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../lib/firebase";
-import { setUserNickname, hasUserNickname } from "../../../services/user/userService";
+import { setUserNickname, hasUserNickname, isNicknameTaken } from "../../../services/user/userService";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,7 @@ export default function CreateNicknamePage() {
   const [user, authLoading] = useAuthState(auth);
   const router = useRouter();
   const [checkingNickname, setCheckingNickname] = useState(true);
+  const [nicknameTakenError, setNicknameTakenError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkNicknameStatus = async () => {
@@ -43,7 +44,15 @@ export default function CreateNicknamePage() {
   const onSubmit = async (data: NicknameFormData) => {
     if (!user) return;
 
+    setNicknameTakenError(null);
+
     try {
+      const isUserNicknameTaken = await isNicknameTaken(data.nickname.trim());
+      if (isUserNicknameTaken) {
+        setNicknameTakenError("This nickname is already taken. Please choose another one.");
+        return;
+      }
+
       await setUserNickname(user.uid, data.nickname.trim());
       router.push("/home-page");
     } catch (error) {
@@ -81,6 +90,9 @@ export default function CreateNicknamePage() {
               />
               {errors.nickname && (
                 <p className="text-red-600 text-sm mt-1">{errors.nickname.message}</p>
+              )}
+              {nicknameTakenError && (
+                <p className="text-red-600 text-sm mt-1">{nicknameTakenError}</p>
               )}
             </div>
             <button

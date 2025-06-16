@@ -2,6 +2,7 @@ import { createUser,
         getUserById, 
         hasUserNickname as repoHasUserNickname, 
         setUserNickname as repoSetUserNickname, 
+        isNicknameTaken as repoIsNicknameTaken,
         User } from "../../repositories/user/userRepository";
 
 export const createUserIfNotExists = async (user: User): Promise<void> => {
@@ -24,3 +25,8 @@ export const setUserNickname = async (uid: string, nickname: string): Promise<vo
   console.log(`[UserService] Setting user nickname for uid: ${uid}`);
   await repoSetUserNickname(uid, nickname);
 };
+
+export const isNicknameTaken = async (nickname: string): Promise<Boolean> => {
+  console.log(`[UserService] Checking if nickname is taken: ${nickname}`);
+  return repoIsNicknameTaken(nickname);
+}

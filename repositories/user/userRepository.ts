@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, query, doc, getDoc, getDocs, setDoc, updateDoc, where } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 
 export type User = {
@@ -43,4 +43,14 @@ export const setUserNickname = async (uid: string, nickname: string): Promise<vo
   const docRef = doc(db, "users", uid);
   await updateDoc(docRef, { nickname });
   console.log(`[UserRepository] Nickname set successfully`);
+};
+
+export const isNicknameTaken = async (nickname: string): Promise<boolean> => {
+  console.log(`[UserRepository] Checking if nickname '${nickname}' is taken`);
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("nickname", "==", nickname));
+  const querySnapshot = await getDocs(q);
+  const taken = !querySnapshot.empty;
+  console.log(`[UserRepository] Nickname '${nickname}' taken: ${taken}`);
+  return taken;
 };
