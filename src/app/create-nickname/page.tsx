@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../lib/firebase";
-import { setUserNickname } from "../../../services/user/userService";
+import { setUserNickname, hasUserNickname } from "../../../services/user/userService";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,11 +13,23 @@ import { nicknameSchema, NicknameFormData } from "../../../schemas/user/nickname
 export default function CreateNicknamePage() {
   const [user, authLoading] = useAuthState(auth);
   const router = useRouter();
+  const [checkingNickname, setCheckingNickname] = useState(true);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/");
-    }
+    const checkNicknameStatus = async () => {
+      if (!authLoading && user) {
+        const hasNickname = await hasUserNickname(user.uid);
+        if (hasNickname) {
+          router.push("/home-page");
+        } else {
+          setCheckingNickname(false);
+        }
+      } else if (!authLoading && !user) {
+        router.push("/");
+      }
+    };
+
+    checkNicknameStatus();
   }, [authLoading, user, router]);
 
   const {
@@ -40,8 +52,8 @@ export default function CreateNicknamePage() {
     }
   };
 
-  if (authLoading) {
-    return <p>Loading user info...</p>;
+  if (authLoading || checkingNickname) {
+    return <p>Loading...</p>;
   }
 
   if (!user) return null;
