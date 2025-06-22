@@ -14,11 +14,12 @@ export default function SignOut() {
   };  
 
   return (
-    <button
-      onClick={() => auth.signOut()}
-      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-    >
-      Sign Out
-    </button>
+      <button onClick={handleSignOut} className="px-4 py-2 cursor-pointer">
+        <img 
+          src="/signout-icon.png"
+          alt="Sign Out"
+          className="w-16" 
+        />
+      </button>
   );
 }
