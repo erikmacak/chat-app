@@ -1,11 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+import { useRouter } from "next/navigation";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../../../lib/firebase";
+import { hasUserNickname } from "../../../repositories/user/userRepository";
+
 import SignOut from "../../../components/auth/SignOut";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
 
 export default function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [user, authLoading] = useAuthState(auth);
+  const router = useRouter()
+
+  useEffect(() => {
+    const checkNicknameStatus = async () => {
+      if (!authLoading && user) {
+        const hasNickname = await hasUserNickname(user.uid);
+        if (!hasNickname) {
+          router.push("/create-nickname");
+        }
+      } else if (!authLoading && !user) {
+        router.push("/");
+      }
+    };
+
+    checkNicknameStatus();
+  }, [authLoading, user, router]);
+
+  if (authLoading) {
+    return <p>Loading...</p>
+  }
 
   return (
     <main className="min-h-screen flex flex-col sm:flex-row-reverse bg-gradient-to-b from-indigo-600 to-indigo-400 text-white">
