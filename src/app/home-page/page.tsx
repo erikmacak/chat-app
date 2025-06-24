@@ -105,9 +105,9 @@ export default function HomePage() {
                     className="flex items-center space-x-3 px-4 py-2 hover:bg-indigo-100 cursor-pointer"
                   >
                     <img
-                      src={user.photoURL || "/default-avatar.png"}
+                      src={user.photoURL || "/default-avatar-icon.png"}
                       alt={user.nickname}
-                      className="w-8 h-8 rounded-full bg-red-600 text-white"
+                      className="w-8 h-8 rounded-full bg"
                     />
                     <span className="font-medium">{user.nickname}</span>
                   </div>
