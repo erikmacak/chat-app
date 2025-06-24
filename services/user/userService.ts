@@ -3,6 +3,7 @@ import { createUser,
         hasUserNickname as repoHasUserNickname, 
         setUserNickname as repoSetUserNickname, 
         isNicknameTaken as repoIsNicknameTaken,
+        getUsersByNicknamePrefix as repoGetUsersByNicknamePrefix,
         User } from "../../repositories/user/userRepository";
 
 export const createUserIfNotExists = async (user: User): Promise<void> => {
@@ -30,3 +31,8 @@ export const isNicknameTaken = async (nickname: string): Promise<Boolean> => {
   console.log(`[UserService] Checking if nickname is taken: ${nickname}`);
   return repoIsNicknameTaken(nickname);
 }
+
+export const getUsersByNicknamePrefix = async (prefix: string): Promise<User[]> => {
+  console.log(`[UserService] Searching users with nickname prefix: '${prefix}'`);
+  return repoGetUsersByNicknamePrefix(prefix);
+};

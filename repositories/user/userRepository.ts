@@ -1,4 +1,4 @@
-import { collection, query, doc, getDoc, getDocs, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, query, doc, getDoc, getDocs, setDoc, updateDoc, where, orderBy, startAt, endAt } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 
 export type User = {
@@ -53,4 +53,29 @@ export const isNicknameTaken = async (nickname: string): Promise<boolean> => {
   const taken = !querySnapshot.empty;
   console.log(`[UserRepository] Nickname '${nickname}' taken: ${taken}`);
   return taken;
+};
+
+export const getUsersByNicknamePrefix = async (prefix: string): Promise<User[]> => {
+  console.log(`[UserRepository] Searching users with nickname prefix: '${prefix}'`);
+  const usersRef = collection(db, "users");
+
+  const q = query(
+    usersRef,
+    orderBy("nickname"),
+    startAt(prefix),
+    endAt(prefix + '\uf8ff')
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  const users: User[] = querySnapshot.docs.map(doc => {
+    const data = doc.data() as User;
+    return {
+      ...data,
+      uid: doc.id 
+    };
+  });
+
+  console.log(`[UserRepository] Found ${users.length} users`);
+  return users;
 };
