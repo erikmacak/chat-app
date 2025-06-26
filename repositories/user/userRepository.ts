@@ -1,12 +1,6 @@
+import { User } from "../../models/User";
 import { collection, query, doc, getDoc, getDocs, setDoc, updateDoc, where, orderBy, startAt, endAt } from "firebase/firestore";
 import { db } from "../../lib/firebase";
-
-export type User = {
-  uid: string;
-  email: string | null;
-  photoURL: string | null;
-  nickname?: string;
-};
 
 export const getUserById = async (uid: string): Promise<User | null> => {
   console.log(`[UserRepository] Fetching user by uid: ${uid}`);

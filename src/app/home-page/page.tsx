@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../lib/firebase";
-import { User, hasUserNickname, getUsersByNicknamePrefix } from "../../../repositories/user/userRepository";
+import { User } from "../../../models/User";
+import { hasUserNickname, getUsersByNicknamePrefix } from "../../../repositories/user/userRepository";
 
 import { useDebounce } from "use-debounce";
 
