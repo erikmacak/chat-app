@@ -1,7 +1,7 @@
 import { User } from "../../models/User";
 import { collection, query, doc, getDoc, getDocs, setDoc, updateDoc, where, orderBy, startAt, endAt } from "firebase/firestore";
 import { db } from "../../lib/firebase";
-import { stripUid } from "../../utils/user";
+import { deserializeUser, stripUid } from "../../utils/user";
 
 export const getUserById = async (uid: string): Promise<User | null> => {
   console.log(`[UserRepository] Fetching user by uid: ${uid}`);
@@ -13,7 +13,7 @@ export const getUserById = async (uid: string): Promise<User | null> => {
     return null;
   }
 
-  const user = docSnap.data() as User;
+  const user = deserializeUser(docSnap);
   console.log(`[UserRepository] User found: `, user);
   return user;
 };
@@ -63,13 +63,7 @@ export const getUsersByNicknamePrefix = async (prefix: string): Promise<User[]> 
 
   const querySnapshot = await getDocs(q);
 
-  const users: User[] = querySnapshot.docs.map(doc => {
-    const data = doc.data() as User;
-    return {
-      ...data,
-      uid: doc.id 
-    };
-  });
+  const users: User[] = querySnapshot.docs.map(deserializeUser);
 
   console.log(`[UserRepository] Found ${users.length} users`);
   return users;
