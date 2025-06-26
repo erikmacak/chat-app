@@ -1,6 +1,7 @@
 import { User } from "../../models/User";
 import { collection, query, doc, getDoc, getDocs, setDoc, updateDoc, where, orderBy, startAt, endAt } from "firebase/firestore";
 import { db } from "../../lib/firebase";
+import { stripUid } from "../../utils/user";
 
 export const getUserById = async (uid: string): Promise<User | null> => {
   console.log(`[UserRepository] Fetching user by uid: ${uid}`);
@@ -20,7 +21,7 @@ export const getUserById = async (uid: string): Promise<User | null> => {
 export const createUser = async (user: User): Promise<void> => {
   console.log(`[UserRepository] Creating user with uid: ${user.uid}`);
   const docRef = doc(db, "users", user.uid);
-  await setDoc(docRef, user);
+  await setDoc(docRef, stripUid(user));
   console.log(`[UserRepository] User created successfully`);
 };
 
