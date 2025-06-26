@@ -34,9 +34,10 @@ export const hasUserNickname = async (uid: string): Promise<boolean> => {
 };
 
 export const setUserNickname = async (uid: string, nickname: string): Promise<void> => {
+  const nicknameLower = nickname.toLowerCase();
   console.log(`[UserRepository] Setting nickname for uid: ${uid} to '${nickname}'`);
   const docRef = doc(db, "users", uid);
-  await updateDoc(docRef, { nickname });
+  await updateDoc(docRef, { nickname, nickname_lower: nicknameLower });
   console.log(`[UserRepository] Nickname set successfully`);
 };
 
@@ -52,13 +53,16 @@ export const isNicknameTaken = async (nickname: string): Promise<boolean> => {
 
 export const getUsersByNicknamePrefix = async (prefix: string): Promise<User[]> => {
   console.log(`[UserRepository] Searching users with nickname prefix: '${prefix}'`);
+
+  const prefixLower = prefix.toLowerCase();
+
   const usersRef = collection(db, "users");
 
   const q = query(
     usersRef,
-    orderBy("nickname"),
-    startAt(prefix),
-    endAt(prefix + '\uf8ff')
+    orderBy("nickname_lower"),
+    startAt(prefixLower),
+    endAt(prefixLower + '\uf8ff')
   );
 
   const querySnapshot = await getDocs(q);
