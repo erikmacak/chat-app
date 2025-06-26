@@ -1,10 +1,10 @@
+import { User } from "../../models/User";
 import { createUser, 
         getUserById, 
         hasUserNickname as repoHasUserNickname, 
         setUserNickname as repoSetUserNickname, 
         isNicknameTaken as repoIsNicknameTaken,
-        getUsersByNicknamePrefix as repoGetUsersByNicknamePrefix,
-        User } from "../../repositories/user/userRepository";
+        getUsersByNicknamePrefix as repoGetUsersByNicknamePrefix } from "../../repositories/user/userRepository";
 
 export const createUserIfNotExists = async (user: User): Promise<void> => {
   console.log(`[UserService] Checking if user exists with uid: ${user.uid}`);

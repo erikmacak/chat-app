@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../lib/firebase";
-import { User, hasUserNickname, getUsersByNicknamePrefix } from "../../../repositories/user/userRepository";
+import { User } from "../../../models/User";
+import { hasUserNickname, getUsersByNicknamePrefix } from "../../../repositories/user/userRepository";
 
 import { useDebounce } from "use-debounce";
 
@@ -105,9 +106,9 @@ export default function HomePage() {
                     className="flex items-center space-x-3 px-4 py-2 hover:bg-indigo-100 cursor-pointer"
                   >
                     <img
-                      src={user.photoURL || "/default-avatar.png"}
+                      src={user.photoURL || "/default-avatar-icon.png"}
                       alt={user.nickname}
-                      className="w-8 h-8 rounded-full bg-red-600 text-white"
+                      className="w-8 h-8 rounded-full bg"
                     />
                     <span className="font-medium">{user.nickname}</span>
                   </div>

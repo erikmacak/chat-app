@@ -1,12 +1,7 @@
+import { User } from "../../models/User";
 import { collection, query, doc, getDoc, getDocs, setDoc, updateDoc, where, orderBy, startAt, endAt } from "firebase/firestore";
 import { db } from "../../lib/firebase";
-
-export type User = {
-  uid: string;
-  email: string | null;
-  photoURL: string | null;
-  nickname?: string;
-};
+import { deserializeUser, stripUid } from "../../utils/user";
 
 export const getUserById = async (uid: string): Promise<User | null> => {
   console.log(`[UserRepository] Fetching user by uid: ${uid}`);
@@ -18,7 +13,7 @@ export const getUserById = async (uid: string): Promise<User | null> => {
     return null;
   }
 
-  const user = docSnap.data() as User;
+  const user = deserializeUser(docSnap);
   console.log(`[UserRepository] User found: `, user);
   return user;
 };
@@ -26,7 +21,7 @@ export const getUserById = async (uid: string): Promise<User | null> => {
 export const createUser = async (user: User): Promise<void> => {
   console.log(`[UserRepository] Creating user with uid: ${user.uid}`);
   const docRef = doc(db, "users", user.uid);
-  await setDoc(docRef, user);
+  await setDoc(docRef, stripUid(user));
   console.log(`[UserRepository] User created successfully`);
 };
 
@@ -39,9 +34,10 @@ export const hasUserNickname = async (uid: string): Promise<boolean> => {
 };
 
 export const setUserNickname = async (uid: string, nickname: string): Promise<void> => {
+  const nicknameLower = nickname.toLowerCase();
   console.log(`[UserRepository] Setting nickname for uid: ${uid} to '${nickname}'`);
   const docRef = doc(db, "users", uid);
-  await updateDoc(docRef, { nickname });
+  await updateDoc(docRef, { nickname, nickname_lower: nicknameLower });
   console.log(`[UserRepository] Nickname set successfully`);
 };
 
@@ -57,24 +53,21 @@ export const isNicknameTaken = async (nickname: string): Promise<boolean> => {
 
 export const getUsersByNicknamePrefix = async (prefix: string): Promise<User[]> => {
   console.log(`[UserRepository] Searching users with nickname prefix: '${prefix}'`);
+
+  const prefixLower = prefix.toLowerCase();
+
   const usersRef = collection(db, "users");
 
   const q = query(
     usersRef,
-    orderBy("nickname"),
-    startAt(prefix),
-    endAt(prefix + '\uf8ff')
+    orderBy("nickname_lower"),
+    startAt(prefixLower),
+    endAt(prefixLower + '\uf8ff')
   );
 
   const querySnapshot = await getDocs(q);
 
-  const users: User[] = querySnapshot.docs.map(doc => {
-    const data = doc.data() as User;
-    return {
-      ...data,
-      uid: doc.id 
-    };
-  });
+  const users: User[] = querySnapshot.docs.map(deserializeUser);
 
   console.log(`[UserRepository] Found ${users.length} users`);
   return users;
